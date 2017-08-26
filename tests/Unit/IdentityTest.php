@@ -9,7 +9,7 @@ use SmoDav\Mpesa\C2B\Identity;
 class IdentityTest extends TestCase
 {
     /**
-     * Test that authenticator works.
+     * Test for identity validation.
      *
      * @test
      * @expectedException     \SmoDav\Mpesa\Exceptions\ErrorException
