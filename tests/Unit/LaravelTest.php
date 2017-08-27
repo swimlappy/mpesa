@@ -6,7 +6,6 @@ use SmoDav\Mpesa\C2B\STK;
 use SmoDav\Mpesa\C2B\Identity;
 use SmoDav\Mpesa\C2B\Registrar;
 use Orchestra\Testbench\TestCase;
-use SmoDav\Mpesa\Contracts\CacheStore;
 use SmoDav\Mpesa\Contracts\ConfigurationStore;
 
 class LaravelTest extends TestCase
@@ -65,19 +64,6 @@ class LaravelTest extends TestCase
             'Registrar' => 'SmoDav\Mpesa\Laravel\Facades\Registrar',
             'Identity' => 'SmoDav\Mpesa\Laravel\Facades\Identity',
         ];
-    }
-
-    /**
-     * Test the Laravel cache.
-     *
-     * @test
-     **/
-    public function testLaravelCache()
-    {
-        $cache = $this->app->make(CacheStore::class);
-        $this->assertTrue($cache->put('test', 'Demo value'));
-        // In some way the cache store fails to store the value
-        //$this->assertEquals($cache->get('test'), 'Demo value');
     }
 
     /**
