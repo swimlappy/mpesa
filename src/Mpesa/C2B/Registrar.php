@@ -16,6 +16,8 @@ use SmoDav\Mpesa\Repositories\EndpointsRepository;
  */
 class Registrar
 {
+    use Traits\MakeRequests;
+
     /**
      * @var string
      */
@@ -61,7 +63,7 @@ class Registrar
      */
     public function __construct(Core $engine)
     {
-        $this->engine   = $engine;
+        $this->engine = $engine;
         $this->endpoint = EndpointsRepository::build(MPESA_REGISTER);
     }
 
@@ -88,6 +90,9 @@ class Registrar
      */
     public function onValidation($validationURL)
     {
+        if (!filter_var($validationURL, FILTER_VALIDATE_URL)) {
+            throw new InvalidArgumentException('Please provide a valid Validation URL', 1);
+        }
         $this->validationURL = $validationURL;
 
         return $this;
@@ -102,6 +107,9 @@ class Registrar
      */
     public function onConfirmation($confirmationURL)
     {
+        if (!filter_var($confirmationURL, FILTER_VALIDATE_URL)) {
+            throw new InvalidArgumentException('Please provide a valid Confirmation URL', 1);
+        }
         $this->confirmationURL = $confirmationURL;
 
         return $this;
@@ -144,10 +152,10 @@ class Registrar
         }
 
         $body = [
-            'ShortCode'       => $shortCode ?: $this->shortCode,
-            'ResponseType'    => $onTimeout ?: $this->onTimeout,
+            'ShortCode' => $shortCode ?: $this->shortCode,
+            'ResponseType' => $onTimeout ?: $this->onTimeout,
             'ConfirmationURL' => $confirmationURL ?: $this->confirmationURL,
-            'ValidationURL'   => $validationURL ?: $this->validationURL
+            'ValidationURL' => $validationURL ?: $this->validationURL,
         ];
 
         try {
@@ -157,24 +165,6 @@ class Registrar
         } catch (RequestException $exception) {
             throw $this->generateException($exception->getResponse()->getReasonPhrase());
         }
-    }
-
-    /**
-     * Initiate the registration request.
-     *
-     * @param array $body
-     *
-     * @return mixed|\Psr\Http\Message\ResponseInterface
-     */
-    private function makeRequest($body = [])
-    {
-        return $this->engine->client->request('POST', $this->endpoint, [
-            'headers' => [
-                'Authorization' => 'Bearer ' . $this->engine->auth->authenticate(),
-                'Content-Type'  => 'application/json',
-            ],
-            'json' => $body,
-        ]);
     }
 
     /**

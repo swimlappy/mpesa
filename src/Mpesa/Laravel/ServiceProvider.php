@@ -6,6 +6,8 @@ use Illuminate\Support\ServiceProvider as RootProvider;
 use SmoDav\Mpesa\C2B\Identity;
 use SmoDav\Mpesa\C2B\Registrar;
 use SmoDav\Mpesa\C2B\STK;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Client;
 use SmoDav\Mpesa\Contracts\CacheStore;
 use SmoDav\Mpesa\Contracts\ConfigurationStore;
 use SmoDav\Mpesa\Laravel\Stores\LaravelCache;
@@ -19,8 +21,9 @@ class ServiceProvider extends RootProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__ . '/../../../config/mpesa.php' => config_path('mpesa.php')
+            __DIR__.'/../../../config/mpesa.php' => config_path('mpesa.php'),
         ]);
+        $this->mergeConfigFrom(__DIR__.'/../../../config/mpesa.php', 'mpesa');
     }
 
     /**
@@ -37,6 +40,7 @@ class ServiceProvider extends RootProvider
     {
         $this->app->bind(ConfigurationStore::class, LaravelConfig::class);
         $this->app->bind(CacheStore::class, LaravelCache::class);
+        $this->app->bind(ClientInterface::class, Client::class);
     }
 
     private function registerFacades()

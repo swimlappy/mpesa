@@ -22,13 +22,13 @@ class AuthenticatorTest extends TestCase
     {
         parent::setUp();
         $this->cleanCache();
-        $this->config =new NativeConfig();
+        $this->config = new NativeConfig();
         $this->cache = new NativeCache($this->config);
     }
 
     private function cleanCache()
     {
-        $file = __DIR__ . '/../../cache/.mpc';
+        $file = __DIR__.'/../../cache/.mpc';
         if (is_file($file)) {
             unlink($file);
         }
@@ -62,7 +62,7 @@ class AuthenticatorTest extends TestCase
     {
         $this->expectException(ConfigurationException::class);
         $mock = new MockHandler([
-            new Response(400, [], json_encode([]), null, "Bad Request: Invalid Credentials"),
+            new Response(400, [], json_encode([]), null, 'Bad Request: Invalid Credentials'),
         ]);
 
         $handler = HandlerStack::create($mock);

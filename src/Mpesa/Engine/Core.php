@@ -54,9 +54,7 @@ class Core
         $this->config = $configStore;
         $this->cache = $cacheStore;
         $this->setClient($client);
-
         $this->initialize();
-
         self::$instance = $this;
     }
 
@@ -66,7 +64,7 @@ class Core
     private function initialize()
     {
         new EndpointsRepository($this->config);
-        $this->auth = new Authenticator($this);
+        $this->setAuthenticator();
     }
 
     /**
@@ -77,5 +75,15 @@ class Core
     public function setClient(ClientInterface $client)
     {
         $this->client = $client;
+    }
+
+    /**
+     * Set the Authenticator.
+     *
+     * @param null|Authenticator $authenticator
+     **/
+    public function setAuthenticator(Authenticator $auth = null)
+    {
+        $this->auth = $auth ?: new Authenticator($this);
     }
 }
