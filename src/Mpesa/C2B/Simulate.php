@@ -2,10 +2,10 @@
 
 namespace SmoDav\Mpesa\C2B;
 
-use Carbon\Carbon;
 use GuzzleHttp\Exception\RequestException;
 use SmoDav\Mpesa\Engine\Core;
 use SmoDav\Mpesa\Repositories\EndpointsRepository;
+use SmoDav\Mpesa\Exceptions\ErrorException;
 
 class Simulate
 {
@@ -14,17 +14,17 @@ class Simulate
     protected $number;
     protected $amount;
     protected $reference;
-    
+
     /**
      * Customer PayBill Online Command
      */
     const CUSTOMER_PAYBILL_ONLINE = 'CustomerPayBillOnline';
-    
+
     /**
      * Customer BuyGoods Online Command
      */
     const CUSTOMER_BUYGOODS_ONLINE = 'CustomerBuyGoodsOnline';
-    
+
     /**
      * Valid set of commands allowed.
      */
@@ -84,7 +84,7 @@ class Simulate
     /**
      * Set the product reference number to bill the account.
      *
-     * @param int    $reference
+     * @param int $reference
      *
      * @return $this
      */
@@ -98,7 +98,7 @@ class Simulate
     /**
      * Set the unique command for this transaction type.
      *
-     * @param string    $command
+     * @param string $command
      *
      * @return $this
      */
@@ -113,8 +113,24 @@ class Simulate
         return $this;
     }
 
+    /**
+     * Prepare the transaction simulation request
+     *
+     * @param int    $amount
+     * @param int    $number
+     * @param string $reference
+     * @param string $command
+     *
+     * @throws ErrorException
+     *
+     * @return mixed
+     */
     public function push($amount = null, $number = null, $reference = null, $command = null)
     {
+        if ($this->store->get('mpesa.status') !== 'sandbox') {
+            throw new ErrorException('Cannot simulate a transaction in the live environment.');
+        }
+
         $shortCode = $this->engine->config->get('mpesa.short_code');
 
         $body = [
